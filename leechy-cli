@@ -1,0 +1,45 @@
+#!/usr/bin/python
+# encoding=UTF-8
+
+# Copyright © 2009 Jakub Wilk <ubanus@users.sf.net>
+#
+# This program is free software; you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation; version 2 dated June, 1991.
+#
+# This program is distributed in the hope that it will be useful, but
+# WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+# General Public License for more details.
+
+
+'''
+leechy-cli [option...] <URIs...>
+'''
+
+import optparse
+import sys
+
+import leechy
+
+leechy.register_all_plugins()
+
+oparser = optparse.OptionParser(usage = __doc__.strip())
+oparser.add_option('-D', '--debug', dest='debug', action='store_true')
+options, args = oparser.parse_args(sys.argv[1:])
+
+if not args:
+    oparser.error('missing URI')
+
+for uri in args:
+    leechy.log_info('>>> %s' % uri)
+    try:
+        leechy.dispatch(uri)
+    except leechy.NoMatchingPlugin:
+        leechy.log_error('Plugin not found.')
+    except leechy.ApiError, ex:
+        leechy.log_error('API error (code=%s). Last page dumped into: %s' % (ex.code, ex.dump_name))
+        sys.exit(1)
+    leechy.log_info('')
+
+# vim:ts=4 sw=4 et
