@@ -158,8 +158,10 @@ class Browser(Browser):
         m = _uri_search(content)
         if m is None:
             self.api_error(code='uri')
-        target = m.group(5)
-        uri = m.group(1) + vars[m.group(2)] + vars[m.group(3)] + m.group(4) + target
+        target = self.html_unescape(m.group(5))
+        iri = m.group(1) + vars[m.group(2)] + vars[m.group(3)] + m.group(4) + target
+        uri = urllib.quote(iri.encode('UTF-8'), safe=':/')
+        target = target.encode(self.filename_encoding)
         if os.path.exists(target):
             self.log_info('Nothing to do.')
             return
