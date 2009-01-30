@@ -96,16 +96,17 @@ class SimultaneousDownload(Exception):
 class ApiError(Exception):
 
     def __init__(self, ua, code=None):
+        import os
         import tempfile
         Exception.__init__(self, ua)
         self.code = code
         content = ua.response().read()
-        fp = tempfile.NamedTemporaryFile(prefix='leechy-', suffix='.html')
+        fd, self.dump_name = tempfile.mkstemp(prefix='leechy-', suffix='.html')
+        fp = os.fdopen(fd)
         try:
             fp.write(content)
         finally:
             fp.close()
-        self.dump_name = fp.name
 
 def sleep(n):
     import sys
