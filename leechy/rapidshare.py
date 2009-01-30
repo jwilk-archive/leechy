@@ -25,7 +25,6 @@ class Browser(Browser):
     pattern = r'^http://rapidshare[.]com/files/[0-9]+/'
 
     def download(self):
-        import time
         import urlparse
         import os
         _, _, target, _, _, _ = urlparse.urlparse(self.start_uri)
