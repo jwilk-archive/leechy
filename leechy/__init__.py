@@ -59,46 +59,6 @@ def _get_terminal_size(fp):
 def _read_token():
     return raw_input('Enter token: ')
 
-def read_captcha(image_fp):
-    import sys
-    try:
-        import Image, ImageChops
-        image = Image.open(image_fp)
-        terminal_width, terminal_height = _get_terminal_size(sys.stdout)
-        if terminal_width >= 40 and terminal_height >= 25:
-            image.convert('L')
-            bg = Image.new('L', image.size, 0)
-            diff = ImageChops.difference(image, bg)
-            bbox = diff.getbbox()
-            if bbox:
-                image = image.crop(bbox)
-            width, height = image.size
-            new_width = terminal_width - 2
-            new_height = int(1.0 * height / width * new_width)
-            if new_height + 8 > terminal_height:
-                new_height = terminal_height - 8
-                new_width = int(1.0 * width / height * new_height)
-            image = image.resize((new_width, new_height))
-            for y in xrange(new_height):
-                for x in xrange(new_width):
-                    sys.stdout.write('#' if image.getpixel((x, y)) >  0 else ' ')
-                sys.stdout.write('\n')
-        return _read_token()
-    except ImportError:
-        pass
-    import tempfile
-    import os
-    fp = tempfile.NamedTemporaryFile(prefix='leechy-', suffix='.gif')
-    try:
-        try:
-            fp.write(http_fp.read())
-        finally:
-            fp.close()
-        print 'Token image path:', fp.name
-        return _read_token()
-    finally:
-        os.unlink(fp.name)
-
 class Progress(object):
 
     def __init__(self, fp, max):
@@ -193,10 +153,56 @@ class Browser(mechanize.Browser):
     def simultaneous_download(self):
         raise SimultaneousDownload(self)
 
+    def solve_captacha(self, image):
+        return None
+
+    def read_captcha(self, image_fp):
+        import sys
+        try:
+            import Image, ImageChops
+            image = Image.open(image_fp)
+            result = self.solve_captcha(image)
+            if result is not None:
+                return result
+            terminal_width, terminal_height = _get_terminal_size(sys.stdout)
+            if terminal_width >= 40 and terminal_height >= 25:
+                image.convert('L')
+                bg = Image.new('L', image.size, 0)
+                diff = ImageChops.difference(image, bg)
+                bbox = diff.getbbox()
+                if bbox:
+                    image = image.crop(bbox)
+                width, height = image.size
+                new_width = terminal_width - 2
+                new_height = int(1.0 * height / width * new_width)
+                if new_height + 8 > terminal_height:
+                    new_height = terminal_height - 8
+                    new_width = int(1.0 * width / height * new_height)
+                image = image.resize((new_width, new_height))
+                for y in xrange(new_height):
+                    for x in xrange(new_width):
+                        sys.stdout.write('#' if image.getpixel((x, y)) >  0 else ' ')
+                    sys.stdout.write('\n')
+            return _read_token()
+        except ImportError:
+            pass
+        import tempfile
+        import os
+        fp = tempfile.NamedTemporaryFile(prefix='leechy-', suffix='.gif')
+        try:
+            try:
+                fp.write(http_fp.read())
+            finally:
+                fp.close()
+            print 'Token image path:', fp.name
+            return _read_token()
+        finally:
+            os.unlink(fp.name)
+
+
     log_info = staticmethod(log_info)
     log_error = staticmethod(log_error)
 
-    read_captcha = staticmethod(read_captcha)
     wget = staticmethod(wget)
     sleep = staticmethod(sleep)
 
