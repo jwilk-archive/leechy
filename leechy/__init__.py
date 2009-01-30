@@ -138,6 +138,12 @@ def log_error(message):
     import sys
     print >>sys.stderr, message
 
+def html_unescape(html):
+    if '<' in html:
+        raise ValueError
+    from xml.etree import cElementTree as ET
+    return ET.fromstring('<root>%s</root>' % html).text
+
 class Browser(mechanize.Browser):
 
     pattern = None
@@ -146,10 +152,12 @@ class Browser(mechanize.Browser):
         raise NotImplementedError
 
     def __init__(self, start_uri, debug=0):
+        import locale
         mechanize.Browser.__init__(self)
         self.start_uri = start_uri
         self.addheaders = [('User-Agent', 'Mozilla/5.0')]
         self.set_handle_robots(0)
+        self.filename_encoding = locale.getpreferredencoding()
         if debug:
             self.set_debug_http(1)
 
@@ -211,5 +219,6 @@ class Browser(mechanize.Browser):
 
     wget = staticmethod(wget)
     sleep = staticmethod(sleep)
+    html_unescape = staticmethod(html_unescape)
 
 # vim:ts=4 sw=4 et
