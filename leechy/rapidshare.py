@@ -42,7 +42,7 @@ class Browser(Browser):
                 break
             seconds = int(m.group(1)) * 60
             self.sleep(seconds)
-            reponse = self.reload()
+            response = self.reload()
             content = response.read()
         if _race_search(content):
             self.simultaneous_download()
