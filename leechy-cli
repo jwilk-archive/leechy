@@ -34,7 +34,7 @@ if not args:
 for uri in args:
     leechy.log_info('>>> %s' % uri)
     try:
-        leechy.dispatch(uri)
+        leechy.dispatch(uri, debug=options.debug)
     except leechy.NoMatchingPlugin:
         leechy.log_error('Plugin not found.')
     except leechy.ApiError, ex:

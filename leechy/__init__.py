@@ -32,10 +32,10 @@ def register_all_plugins():
         else:
             register_plugin(browser)
 
-def dispatch(uri):
+def dispatch(uri, **kwargs):
     for match, browser_class in _dispatch:
         if match(uri):
-            return browser_class(uri).download()
+            return browser_class(uri, **kwargs).download()
     raise NoMatchingPlugin
 
 def _ioctl_GWINSZ(fp):
