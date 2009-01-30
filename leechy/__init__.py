@@ -118,11 +118,16 @@ def sleep(n):
         time.sleep(1)
     progress.update(n)
 
+class WgetFailure(Exception):
+    pass
+
 def wget(uri, target):
     import subprocess
     import os
     tmp_target = '%s.leechy-tmp' % target
-    subprocess.call(['wget', '-O', tmp_target, '--', uri])
+    rc = subprocess.call(['wget', '-O', tmp_target, '--', uri])
+    if rc != 0:
+        raise WgetFailure()
     os.rename(tmp_target, target)
 
 def log_info(message):
