@@ -102,7 +102,7 @@ class ApiError(Exception):
         self.code = code
         content = ua.response().read()
         fd, self.dump_name = tempfile.mkstemp(prefix='leechy-', suffix='.html')
-        fp = os.fdopen(fd)
+        fp = os.fdopen(fd, 'wb')
         try:
             fp.write(content)
         finally:
