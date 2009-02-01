@@ -204,14 +204,12 @@ class Browser(mechanize.Browser):
         import os
         fp = tempfile.NamedTemporaryFile(prefix='leechy-', suffix='.gif')
         try:
-            try:
-                fp.write(http_fp.read())
-            finally:
-                fp.close()
+            fp.write(image_fp.read())
+            fp.flush()
             print 'Token image path:', fp.name
             return _read_token()
         finally:
-            os.unlink(fp.name)
+            fp.close()
 
 
     log_info = staticmethod(log_info)
