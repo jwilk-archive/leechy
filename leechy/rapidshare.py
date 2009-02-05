@@ -32,7 +32,15 @@ class Browser(Browser):
         if os.path.exists(target):
             self.log_info('Nothing to do.')
             return
-        self.open(self.start_uri)
+        response = self.open(self.start_uri)
+        try:
+            self.forms().next()
+        except StopIteration:
+            content = response.read()
+            if 'The file could not be found' in content:
+                self.file_not_found()
+            else:
+                self.api_error('noforms')
         self.select_form(nr=0);
         response = self.submit()
         content = response.read()
