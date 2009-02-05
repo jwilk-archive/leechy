@@ -37,9 +37,14 @@ for uri in args:
         leechy.dispatch(uri, debug=options.debug)
     except leechy.NoMatchingPlugin:
         leechy.log_error('Plugin not found.')
+    except leechy.FileNotFound:
+        leechy.log_error('File not found.')
     except leechy.ApiError, ex:
         leechy.log_error('API error (code=%s). Last page dumped into: %s' % (ex.code, ex.dump_name))
         sys.exit(1)
+    except KeyboardInterrupt:
+        leechy.log_error('Interrupted by user.')
+        sys.exit(2)
     leechy.log_info('')
 
 # vim:ts=4 sw=4 et
