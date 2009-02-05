@@ -93,6 +93,9 @@ class NoMatchingPlugin(Exception):
 class SimultaneousDownload(Exception):
     pass
 
+class FileNotFound(Exception):
+    pass
+
 class ApiError(Exception):
 
     def __init__(self, ua, code=None):
@@ -166,6 +169,9 @@ class Browser(mechanize.Browser):
 
     def simultaneous_download(self):
         raise SimultaneousDownload(self)
+
+    def file_not_found(self):
+        raise FileNotFound(self)
 
     def solve_captacha(self, image):
         return None
