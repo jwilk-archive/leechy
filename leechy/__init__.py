@@ -114,6 +114,8 @@ class ApiError(Exception):
 def sleep(n):
     import sys
     import time
+    if n == 0:
+        return
     log_info('Waiting %d seconds...' % n)
     progress = Progress(sys.stderr, n)
     for i in xrange(n):
