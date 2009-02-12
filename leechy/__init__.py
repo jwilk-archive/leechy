@@ -175,7 +175,7 @@ class Browser(mechanize.Browser):
     def file_not_found(self):
         raise FileNotFound(self)
 
-    def solve_captacha(self, image):
+    def solve_captcha(self, image):
         return None
 
     def read_captcha(self, image_fp):
