@@ -98,18 +98,21 @@ class FileNotFound(Exception):
 
 class ApiError(Exception):
 
-    def __init__(self, ua, code=None):
+    def __init__(self, ua, code=None, dump=False):
         import os
         import tempfile
         Exception.__init__(self, ua)
         self.code = code
         content = ua.response().read()
-        fd, self.dump_name = tempfile.mkstemp(prefix='leechy-', suffix='.html')
-        fp = os.fdopen(fd, 'wb')
-        try:
-            fp.write(content)
-        finally:
-            fp.close()
+        if dump:
+            fd, self.dump_name = tempfile.mkstemp(prefix='leechy-', suffix='.html')
+            fp = os.fdopen(fd, 'wb')
+            try:
+                fp.write(content)
+            finally:
+                fp.close()
+        else:
+            self.dump_name = None
 
 def sleep(n):
     import sys
@@ -163,11 +166,12 @@ class Browser(mechanize.Browser):
         self.addheaders = [('User-Agent', 'Mozilla/5.0')]
         self.set_handle_robots(0)
         self.filename_encoding = locale.getpreferredencoding()
+        self.debug = debug
         if debug:
             self.set_debug_http(1)
 
     def api_error(self, code=None):
-        raise ApiError(self, code)
+        raise ApiError(self, code, dump=self.debug)
 
     def simultaneous_download(self):
         raise SimultaneousDownload(self)

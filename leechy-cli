@@ -40,7 +40,11 @@ for uri in args:
     except leechy.FileNotFound:
         leechy.log_error('File not found.')
     except leechy.ApiError, ex:
-        leechy.log_error('API error (code=%s). Last page dumped into: %s' % (ex.code, ex.dump_name))
+        msg = 'API error (code=%s)' % (ex.code,)
+        if (ex.dump_name != None):
+            msg += ' Last page dumped into: %s' % (ex.dump_name,)
+        leechy.log_error(msg)
+        del msg
         sys.exit(1)
     except KeyboardInterrupt:
         leechy.log_error('Interrupted by user.')
