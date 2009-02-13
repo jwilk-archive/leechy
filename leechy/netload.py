@@ -26,6 +26,13 @@ class Browser(Browser):
 
     pattern = r'^http://netload[.]in/[0-9a-zA-Z]+/'
 
+    def enhance_captcha(self, image):
+        try:
+            import ImageFilter
+        except:
+            return image
+        return image.filter(ImageFilter.MedianFilter(size=3))
+
     def download(self):
         import urlparse
         import os
