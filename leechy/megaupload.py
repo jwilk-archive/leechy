@@ -62,7 +62,6 @@ class Browser(Browser):
 
     pattern = r'^http://(www[.])?megaupload[.]com(/[a-z]+)?/[?]d=[A-Z0-9]+$'
 
-
     def _find_letter(self, this):
         import itertools
         best = None
