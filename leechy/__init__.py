@@ -182,11 +182,15 @@ class Browser(mechanize.Browser):
     def solve_captcha(self, image):
         return None
 
+    def enhance_captcha(self, image):
+        return image
+
     def read_captcha(self, image_fp):
         import sys
         try:
             import Image, ImageChops
             image = Image.open(image_fp)
+            image = self.enhance_captcha(image)
             result = self.solve_captcha(image)
             if result is not None:
                 return result
