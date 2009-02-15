@@ -188,6 +188,10 @@ class Browser(mechanize.Browser):
     def read_captcha(self, image_fp):
         import sys
         try:
+            import aalib
+        except ImportError:
+            aalib = None
+        try:
             import Image, ImageChops
             image = Image.open(image_fp)
             image = self.enhance_captcha(image)
@@ -208,11 +212,23 @@ class Browser(mechanize.Browser):
                 if new_height + 8 > terminal_height:
                     new_height = terminal_height - 8
                     new_width = int(1.0 * width / height * new_height)
-                image = image.resize((new_width, new_height))
-                for y in xrange(new_height):
-                    for x in xrange(new_width):
-                        sys.stdout.write('#' if image.getpixel((x, y)) >  0 else ' ')
+                if aalib:
+                    screen = aalib.AnsiScreen(width=new_width, height=new_height)
+                    width, height = screen.image_width, screen.image_height
+                    image = image.resize((width, height))
+                    for y in xrange(height):
+                        for x in xrange(width):
+                            screen[x, y] = image.getpixel((x, y))
+                    text = screen.render()
+                    sys.stdout.write(text)
                     sys.stdout.write('\n')
+                else:
+                    width, height = new_width, new_height
+                    image = image.resize((width, height))
+                    for y in xrange(height):
+                        for x in xrange(width):
+                            sys.stdout.write('#' if image.getpixel((x, y)) > 0 else ' ')
+                        sys.stdout.write('\n')
             return _read_token()
         except ImportError:
             pass
