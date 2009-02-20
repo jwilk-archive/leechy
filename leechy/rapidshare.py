@@ -39,6 +39,8 @@ class Browser(Browser):
             content = response.read()
             if 'The file could not be found' in content:
                 self.file_not_found()
+            elif 'is momentarily not available' in content:
+                self.temporary_failure()
             else:
                 self.api_error('noforms')
         self.select_form(nr=0);
