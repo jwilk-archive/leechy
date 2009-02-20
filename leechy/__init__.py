@@ -173,16 +173,16 @@ class Browser(mechanize.Browser):
         if debug:
             self.set_debug_http(1)
 
-    def api_error(self, code=None):
+    def report_api_error(self, code=None):
         raise ApiError(self, code, dump=self.debug)
 
-    def simultaneous_download(self):
+    def report_simultaneous_download(self):
         raise SimultaneousDownload(self)
 
-    def file_not_found(self):
+    def report_file_not_found(self):
         raise FileNotFound(self)
 
-    def temporary_failure(self):
+    def report_temporary_failure(self):
         raise TemporaryFailure(self)
 
     def solve_captcha(self, image):

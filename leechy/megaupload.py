@@ -39,7 +39,7 @@ class Browser(Browser):
         content = response.read()
         captcha_match = _captcha_search(content)
         if captcha_match is None:
-            self.api_error(code='c')
+            self.report_api_error(code='c')
         while captcha_match is not None:
             captcha_uri = captcha_match.group(1)
             captcha_uri = urllib.basejoin(self.start_uri, captcha_uri)
@@ -53,7 +53,7 @@ class Browser(Browser):
         vars = {}
         m = _uri_search(content)
         if m is None:
-            self.api_error(code='uri')
+            self.report_api_error(code='uri')
         target = m.group(2)
         uri = m.group(1)
         if os.path.exists(target):

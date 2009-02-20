@@ -41,7 +41,7 @@ class Browser(Browser):
             content = response.read()
             target_match = _target_search(content)
             if target_match is None:
-                self.api_error('target')
+                self.report_api_error('target')
             target = target_match.group(1)
             if os.path.exists(target):
                 self.log_info('Nothing to do.')
@@ -50,7 +50,7 @@ class Browser(Browser):
             content = response.read()
             sleep_match = _wait1_search(content)
             if sleep_match is None:
-                self.api_error('sleep1')
+                self.report_api_error('sleep1')
             seconds = (int(sleep_match.group(1)) + 99) // 100
             captcha_match = _captcha_search(content)
             if captcha_match is None:

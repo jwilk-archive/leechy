@@ -38,11 +38,11 @@ class Browser(Browser):
         except StopIteration:
             content = response.read()
             if 'The file could not be found' in content:
-                self.file_not_found()
+                self.report_file_not_found()
             elif 'is momentarily not available' in content:
-                self.temporary_failure()
+                self.report_temporary_failure()
             else:
-                self.api_error('noforms')
+                self.report_api_error('noforms')
         self.select_form(nr=0);
         response = self.submit()
         content = response.read()
@@ -55,14 +55,14 @@ class Browser(Browser):
             response = self.reload()
             content = response.read()
         if _race_search(content):
-            self.simultaneous_download()
+            self.report_simultaneous_download()
         m = _uri_search(content)
         if m is None:
-            self.api_error(code='uri')
+            self.report_api_error(code='uri')
         uri = m.group(1)
         m = _wait2_search(content)
         if m is None:
-            self.api_error(code='wait')
+            self.report_api_error(code='wait')
         seconds = int(m.group(1))
         self.sleep(seconds)
         self.wget(uri, target)
