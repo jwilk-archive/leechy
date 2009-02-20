@@ -90,6 +90,9 @@ class Progress(object):
 class NoMatchingPlugin(Exception):
     pass
 
+class TemporaryFailure(Exception):
+    pass
+
 class SimultaneousDownload(Exception):
     pass
 
@@ -178,6 +181,9 @@ class Browser(mechanize.Browser):
 
     def file_not_found(self):
         raise FileNotFound(self)
+
+    def temporary_failure(self):
+        raise TemporaryFailure(self)
 
     def solve_captcha(self, image):
         return None
