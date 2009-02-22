@@ -12,7 +12,7 @@
 # General Public License for more details.
 
 import re
-_captcha_search = re.compile(r'<img src="([^"]*/gencap.php[?][0-9a-f]+)"').search
+_captcha_search = re.compile(r'<img src="([^"]*/gencap.php[?][0-9a-f]+[.]gif)"').search
 _wait_search = re.compile(r'^\s*count=(\d+);', re.MULTILINE).search
 _uri_search = re.compile(r'id="downloadlink"><a href="(http://[a-z0-9]+[.]megaupload[.]com/files/[0-9a-f]+/([^"/]+))"').search;
 	
