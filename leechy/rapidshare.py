@@ -12,7 +12,7 @@
 # General Public License for more details.
 
 import re
-_wait1_search = re.compile(r'Or try again in about (\d+) minutes').search
+_wait1_search = re.compile(r'(?:will have to wait|try again in about) (\d+) minutes').search
 _wait2_search = re.compile(r'^var c=(\d+);', re.MULTILINE).search
 _race_search = re.compile(r'already downloading a file').search
 _uri_search = re.compile(r'form name="dlf" action="([^"]+)"').search
