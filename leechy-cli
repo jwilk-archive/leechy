@@ -43,6 +43,8 @@ for uri in args:
         leechy.log_error('Too many simultaneous downloads. Please try again later.')
     except leechy.TemporaryFailure:
         leechy.log_error('Temporary server failure. Please try again later.')
+    except leechy.WgetFailure:
+        leechy.log_error('Download failed. Maybe try again later?')
     except leechy.ApiError, ex:
         msg = 'API error (code=%s)' % (ex.code,)
         if (ex.dump_name != None):
