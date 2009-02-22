@@ -220,11 +220,8 @@ class Browser(mechanize.Browser):
                     new_width = int(1.0 * width / height * new_height)
                 if aalib:
                     screen = aalib.AnsiScreen(width=new_width, height=new_height)
-                    width, height = screen.image_width, screen.image_height
-                    image = image.resize((width, height))
-                    for y in xrange(height):
-                        for x in xrange(width):
-                            screen[x, y] = image.getpixel((x, y))
+                    image = image.resize(screen.virtual_size)
+                    screen.put_image((0, 0), image)
                     text = screen.render()
                     sys.stdout.write(text)
                     sys.stdout.write('\n')
