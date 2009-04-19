@@ -61,7 +61,7 @@ class Browser(Browser):
             return
         m = _wait_search(content)
         if m is None:
-            self.api_error(code='wait')
+            self.report_api_error(code='wait')
         seconds = int(m.group(1))
         self.sleep(seconds)
         self.wget(uri, target)

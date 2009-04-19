@@ -54,7 +54,7 @@ class Browser(Browser):
             seconds = (int(sleep_match.group(1)) + 99) // 100
             captcha_match = _captcha_search(content)
             if captcha_match is None:
-                self.api_error()
+                self.report_api_error()
             captcha_uri = '/' + captcha_match.group(1)
             captcha = self.open_novisit(captcha_uri)
             token = self.read_captcha(captcha)
@@ -65,14 +65,14 @@ class Browser(Browser):
             content = response.read()
             sleep_match = _wait1_search(content)
             if sleep_match is None:
-                self.api_error('sleep2')
+                self.report_api_error('sleep2')
             seconds = (int(sleep_match.group(1)) + 99) // 100
             uri_match = _uri_search(content)
             if uri_match is None:
                 if _next_file_s in content:
                     self.sleep(seconds)
                     continue
-                self.api_error('uri')
+                self.report_api_error('uri')
             uri = uri_match.group(1)
             self.sleep(seconds)
             self.wget(uri, target)
