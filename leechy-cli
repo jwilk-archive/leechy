@@ -12,26 +12,19 @@
 # MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
 # General Public License for more details.
 
-
-'''
-leechy-cli [option...] <URIs...>
-'''
-
-import optparse
+import argparse
 import sys
 
 import leechy
 
 leechy.register_all_plugins()
 
-oparser = optparse.OptionParser(usage = __doc__.strip())
-oparser.add_option('-D', '--debug', dest='debug', action='store_true')
-options, args = oparser.parse_args(sys.argv[1:])
+argparser = argparse.ArgumentParser()
+argparser.add_argument('--debug', '-D', action='store_true')
+argparser.add_argument('urls', metavar='<url>', nargs='+', help='URL to download')
+options = argparser.parse_args(sys.argv[1:])
 
-if not args:
-    oparser.error('missing URI')
-
-for uri in args:
+for uri in options.urls:
     leechy.log_info('>>> %s' % uri)
     try:
         leechy.dispatch(uri, debug=options.debug)
