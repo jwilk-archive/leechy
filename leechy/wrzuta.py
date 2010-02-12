@@ -15,7 +15,7 @@ from leechy import Browser
 
 class Browser(Browser):
 
-    pattern = r'^http://\w+[.]wrzuta[.]pl/(film|audio)/\w+/[^/]+$'
+    pattern = r'^http://[\w-]+[.]wrzuta[.]pl/(film|audio)/\w+/[^/]+$'
 
     def download(self):
 
