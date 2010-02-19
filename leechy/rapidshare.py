@@ -14,6 +14,7 @@
 import re
 _wait1_search = re.compile(r'(?:will have to wait|try again in about) (\d+) minutes').search
 _wait2_search = re.compile(r'^var c=(\d+);', re.MULTILINE).search
+_overloaded_search = re.compile(r'Unfortunately right now our servers are overloaded').search
 _race_search = re.compile(r'already downloading a file').search
 _uri_search = re.compile(r'form name="dlf" action="([^"]+)"').search
 del re
@@ -47,6 +48,11 @@ class Browser(Browser):
         response = self.submit()
         content = response.read()
         while True:
+            if _overloaded_search(content):
+                yield 300 # FIXME: wild guess
+                response = self.reload()
+                content = response.read()
+                continue
             m = _wait1_search(content)
             if m is None:
                 break
