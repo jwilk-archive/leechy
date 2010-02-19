@@ -34,8 +34,11 @@ def register_all_plugins():
 
 def dispatch(uri, **kwargs):
     for match, browser_class in _dispatch:
-        if match(uri):
-            return browser_class(uri, **kwargs).download()
+        if not match(uri):
+            continue
+        for n in browser_class(uri, **kwargs).download():
+            sleep(n)
+        return
     raise NoMatchingPlugin
 
 def _ioctl_GWINSZ(fp):
@@ -251,7 +254,6 @@ class Browser(mechanize.Browser):
     log_error = staticmethod(log_error)
 
     wget = staticmethod(wget)
-    sleep = staticmethod(sleep)
     html_unescape = staticmethod(html_unescape)
 
 # vim:ts=4 sw=4 et

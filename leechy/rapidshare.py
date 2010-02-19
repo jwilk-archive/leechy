@@ -51,7 +51,7 @@ class Browser(Browser):
             if m is None:
                 break
             seconds = int(m.group(1)) * 60
-            self.sleep(seconds)
+            yield seconds
             response = self.reload()
             content = response.read()
         if _race_search(content):
@@ -64,7 +64,7 @@ class Browser(Browser):
         if m is None:
             self.report_api_error(code='wait')
         seconds = int(m.group(1))
-        self.sleep(seconds)
+        yield seconds
         self.wget(uri, target)
 
 # vim:ts=4 sw=4 et

@@ -59,7 +59,7 @@ class Browser(Browser):
             captcha_uri = '/' + captcha_match.group(1)
             captcha = self.open_novisit(captcha_uri)
             token = self.read_captcha(captcha)
-            self.sleep(seconds)
+            yield seconds
             self.select_form(nr=0)
             self['captcha_check'] = token
             response = self.submit()
@@ -71,11 +71,11 @@ class Browser(Browser):
             uri_match = _uri_search(content)
             if uri_match is None:
                 if _next_file_s in content:
-                    self.sleep(seconds)
+                    yield seconds
                     continue
                 self.report_api_error('uri')
             uri = uri_match.group(1)
-            self.sleep(seconds)
+            yield seconds
             self.wget(uri, target)
             return
 
