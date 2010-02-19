@@ -29,9 +29,10 @@ class Browser(Browser):
     def enhance_captcha(self, image):
         try:
             import ImageFilter
-        except:
+            import ImageChops
+        except ImportError:
             return image
-        return image.filter(ImageFilter.MedianFilter(size=3))
+        return ImageChops.invert(image.convert('L')).filter(ImageFilter.MedianFilter(size=3))
 
     def download(self):
         import urlparse
