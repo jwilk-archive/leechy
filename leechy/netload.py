@@ -24,7 +24,7 @@ from leechy import Browser
 
 class Browser(Browser):
 
-    pattern = r'^http://netload[.]in/[0-9a-zA-Z]+(/|[.]htm$)'
+    pattern = r'^http://(?:www[.])?netload[.]in/[0-9a-zA-Z]+(/|[.]htm$)'
 
     def enhance_captcha(self, image):
         try:
