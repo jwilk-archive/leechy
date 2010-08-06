@@ -44,7 +44,7 @@ class Browser(Browser):
                 self.report_temporary_failure()
             else:
                 self.report_api_error('noforms')
-        self.select_form(nr=1);
+        self.select_form(nr=1)
         response = self.submit()
         content = response.read()
         while True:
