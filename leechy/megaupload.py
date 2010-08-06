@@ -50,7 +50,6 @@ class Browser(Browser):
             response = self.submit()
             content = response.read()
             captcha_match = _captcha_search(content)
-        vars = {}
         m = _uri_search(content)
         if m is None:
             self.report_api_error(code='uri')
