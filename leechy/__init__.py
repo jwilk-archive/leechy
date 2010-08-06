@@ -51,12 +51,12 @@ def _ioctl_GWINSZ(fp):
 def _get_terminal_size(fp):
     try:
         return _ioctl_GWINSZ(fp.fileno())
-    except:
+    except Exception:
         pass
     try:
         import os
         return tuple(int(os.getenv(x)) for x in ('COLUMNS', 'LINES'))
-    except:
+    except Exception:
         return (80, 25)
 
 def _read_token():
