@@ -29,7 +29,6 @@ class Browser(Browser):
             target += '.mp3'
             uri = '/sr/f/%(id)s' % locals()
         else:
-            raise RuntimeError
             self.report_api_error('filetype')
         uri = urlparse.urlunparse((protocol, host, uri, None, None, None))
         self.wget(uri, target)
