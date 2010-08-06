@@ -20,7 +20,6 @@ class Browser(Browser):
     def download(self):
 
         import urlparse
-        import os
         protocol, host, target, _, _, _ = urlparse.urlparse(self.start_uri)
         _, type, id, target = target.split('/')
         if type == 'film':

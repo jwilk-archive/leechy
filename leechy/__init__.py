@@ -239,7 +239,6 @@ class Browser(mechanize.Browser):
         except ImportError:
             pass
         import tempfile
-        import os
         fp = tempfile.NamedTemporaryFile(prefix='leechy-', suffix='.gif')
         try:
             fp.write(image_fp.read())

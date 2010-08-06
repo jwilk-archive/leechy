@@ -35,7 +35,6 @@ class Browser(Browser):
         return ImageChops.invert(image.convert('L')).filter(ImageFilter.MedianFilter(size=3))
 
     def download(self):
-        import urlparse
         import os
         while True:
             response = self.open(self.start_uri)
