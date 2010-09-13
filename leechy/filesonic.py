@@ -21,7 +21,7 @@ del re
 
 class Browser(Browser):
 
-    pattern = r'^http://www[.]filesonic[.]com/file/r[0-9]+/[0-9]+/[^/]+$'
+    pattern = r'^http://www[.]filesonic[.]com/file/(?:r[0-9]+/)?[0-9]+/[^/]+$'
 
     def download(self):
         import urlparse
