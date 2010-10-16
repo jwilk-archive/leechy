@@ -21,11 +21,8 @@
 # SOFTWARE.
 
 import re
-_wait1_search = re.compile(r'(?:will have to wait|try again in about) (\d+) minutes').search
-_wait2_search = re.compile(r'^var c=(\d+);', re.MULTILINE).search
-_overloaded_search = re.compile(r'Unfortunately right now our servers are overloaded').search
-_race_search = re.compile(r'already downloading a file').search
-_uri_search = re.compile(r'form name="dlf" action="([^"]+)"').search
+_wait_search = re.compile('You need to wait ([0-9]+) seconds').search
+_auth_search = re.compile('DL:([a-z0-9]+[.]rapidshare[.]com),([0-9A-F]+)').search
 del re
 
 from leechy import Browser
@@ -38,48 +35,37 @@ class Browser(Browser):
         import urlparse
         import os
         _, _, target, _, _, _ = urlparse.urlparse(self.start_uri)
-        target = target.split('/')[-1]
+        ident, target = target.split('/')[-2:]
         if os.path.exists(target):
             self.log_info('Nothing to do.')
             return
         response = self.open(self.start_uri)
-        try:
-            self.forms().next()
-        except StopIteration:
+        while 1:
+            url = 'http://api.rapidshare.com/cgi-bin/rsapi.cgi?sub=download_v1&fileid=%s&filename=%s&try=1&cbf=RSAPIDispatcher&cbid=1' % (ident, target)
+            response = self.open(url)
             content = response.read()
-            if 'The file could not be found' in content:
-                self.report_file_not_found()
-            elif 'is momentarily not available' in content:
-                self.report_temporary_failure()
-            else:
-                self.report_api_error('noforms')
-        self.select_form(nr=1)
-        response = self.submit()
-        content = response.read()
-        while True:
-            if _overloaded_search(content):
-                yield 300 # FIXME: wild guess
-                response = self.reload()
-                content = response.read()
+            m = _wait_search(content)
+            if m is not None:
+                [seconds] = m.groups()
+                seconds = int(seconds)
+                # Sometimes we can wait much shorter than requested:
+                seconds = min(seconds, 5 * 60)
+                yield seconds
                 continue
-            m = _wait1_search(content)
+            m = _auth_search(content)
             if m is None:
-                break
-            seconds = int(m.group(1)) * 60
-            yield seconds
-            response = self.reload()
-            content = response.read()
-        if _race_search(content):
-            self.report_simultaneous_download()
-        m = _uri_search(content)
-        if m is None:
-            self.report_api_error(code='uri')
-        uri = m.group(1)
-        m = _wait2_search(content)
-        if m is None:
-            self.report_api_error(code='wait')
-        seconds = int(m.group(1))
-        yield seconds
-        self.wget(uri, target)
+                if 'more files from your IP':
+                    self.report_simultaneous_download()
+                self.report_api_error('auth')
+            break
+        for i in xrange(5):
+            self.wget(self.start_uri, target)
+            if os.path.getsize(target) < 200:
+                os.unlink(target)
+                yield 5
+                continue
+            break
+        else:
+            self.report_api_error('download')
 
 # vim:ts=4 sw=4 et
