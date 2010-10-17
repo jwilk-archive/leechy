@@ -54,7 +54,7 @@ class Browser(Browser):
                 continue
             m = _auth_search(content)
             if m is None:
-                if 'more files from your IP':
+                if 'more files from your IP' in content:
                     self.report_simultaneous_download()
                 self.report_api_error('auth')
             break
