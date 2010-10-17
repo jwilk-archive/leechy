@@ -60,7 +60,7 @@ class Browser(Browser):
             break
         for i in xrange(5):
             self.wget(self.start_uri, target)
-            if os.path.getsize(target) < 200:
+            if os.path.getsize(target) < 500:
                 os.unlink(target)
                 yield 5
                 continue
