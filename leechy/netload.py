@@ -43,10 +43,9 @@ class Browser(Browser):
     def enhance_captcha(self, image):
         try:
             import ImageFilter
-            import ImageChops
         except ImportError:
             return image
-        return ImageChops.invert(image.convert('L')).filter(ImageFilter.MedianFilter(size=3))
+        return image.convert('L').filter(ImageFilter.MedianFilter(size=3))
 
     def solve_captcha(self, image):
         tmpdir = tempfile.mkdtemp()

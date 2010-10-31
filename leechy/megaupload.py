@@ -33,14 +33,6 @@ class Browser(Browser):
 
     pattern = r'^http://(www[.])?megaupload[.]com(/[a-z]+)?/[?]d=[a-zA-Z0-9]+$'
 
-    def enhance_captcha(self, image):
-        try:
-            import ImageEnhance
-        except:
-            return image
-        enhancer = ImageEnhance.Contrast(image)
-        return enhancer.enhance(100)
-
     def download(self):
         import os
         import urllib

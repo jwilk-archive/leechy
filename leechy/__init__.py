@@ -218,8 +218,9 @@ class Browser(mechanize.Browser):
                 return result
             terminal_width, terminal_height = _get_terminal_size(sys.stdout)
             if terminal_width >= 40 and terminal_height >= 25:
-                image.convert('L')
-                bg = Image.new('L', image.size, 0)
+                image = image.convert('L')
+                image = ImageChops.invert(image)
+                bg = Image.new('L', image.size, 255)
                 diff = ImageChops.difference(image, bg)
                 bbox = diff.getbbox()
                 if bbox:
