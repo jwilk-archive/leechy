@@ -27,8 +27,13 @@ _wait1_search = re.compile(r'<script type="text/javascript">countdown[(](\d+),')
 _captcha_search = re.compile('<img style="[^"]+" src="(share/includes/captcha.php[?]t=\d+)"').search
 _uri_search = re.compile('<a class="Orange_Link" href="(http://[0-9.]+/[0-9a-f]+)"').search
 _next_file_s = 'You could download your next file'
+_bad_captcha_s = 'You may forgot the security code or it might be wrong'
 del re
 
+import os
+import shutil
+import subprocess as ipc
+import tempfile
 from leechy import Browser
 
 class Browser(Browser):
@@ -43,8 +48,28 @@ class Browser(Browser):
             return image
         return ImageChops.invert(image.convert('L')).filter(ImageFilter.MedianFilter(size=3))
 
+    def solve_captcha(self, image):
+        tmpdir = tempfile.mkdtemp()
+        try:
+            image_filename = os.path.join(tmpdir, 'image.tif')
+            image.save(image_filename)
+            config_filename = os.path.join(tmpdir, 'config')
+            with open(config_filename, 'wt') as config:
+                config.write('tessedit_char_whitelist 0123456789')
+            result_prefix = os.path.join(tmpdir, 'result')
+            try:
+                ipc.check_call(['tesseract', image_filename, result_prefix, 'batch', config_filename])
+            except OSError:
+                return
+            with open(result_prefix + '.txt') as file:
+                result = file.read().strip()
+            if len(result) == 4 and result.isdigit():
+                return result
+            return
+        finally:
+            shutil.rmtree(tmpdir)
+
     def download(self):
-        import os
         while True:
             response = self.open(self.start_uri)
             content = response.read()
@@ -74,6 +99,8 @@ class Browser(Browser):
             content = response.read()
             sleep_match = _wait1_search(content)
             if sleep_match is None:
+                if _bad_captcha_s in content:
+                    continue
                 self.report_api_error('sleep2')
             seconds = (int(sleep_match.group(1)) + 99) // 100
             uri_match = _uri_search(content)
