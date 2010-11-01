@@ -27,14 +27,39 @@ _uri_search = re.compile(r'id="downloadlink"><a href="(http://[a-z0-9]+[.]megaup
 	
 del re
 
+import os
+import shutil
+import subprocess as ipc
+import tempfile
+
 from leechy import Browser
 
 class Browser(Browser):
 
     pattern = r'^http://(www[.])?megaupload[.]com(/[a-z]+)?/[?]d=[a-zA-Z0-9]+$'
 
+    def solve_captcha(self, image):
+        tmpdir = tempfile.mkdtemp()
+        try:
+            image_filename = os.path.join(tmpdir, 'image.tif')
+            image.save(image_filename)
+            config_filename = os.path.join(tmpdir, 'config')
+            with open(config_filename, 'wt') as config:
+                config.write('tessedit_char_whitelist ABCDEFGHIJKLMNOPQRSTUVZ0123456789')
+            result_prefix = os.path.join(tmpdir, 'result')
+            try:
+                ipc.check_call(['tesseract', image_filename, result_prefix, 'batch', config_filename])
+            except OSError:
+                return
+            with open(result_prefix + '.txt') as file:
+                result = file.read().strip()
+            if len(result) == 4 and result.isalnum():
+                return result
+            return
+        finally:
+            shutil.rmtree(tmpdir)
+
     def download(self):
-        import os
         import urllib
         response = self.open(self.start_uri)
         content = response.read()
