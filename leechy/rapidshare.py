@@ -62,7 +62,7 @@ class Browser(Browser):
             self.wget(self.start_uri, target)
             if os.path.getsize(target) < 500:
                 os.unlink(target)
-                yield 5
+                yield 15
                 continue
             break
         else:
