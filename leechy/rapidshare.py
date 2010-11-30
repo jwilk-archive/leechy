@@ -22,7 +22,7 @@
 
 import re
 _wait_search = re.compile('You need to wait ([0-9]+) seconds').search
-_auth_search = re.compile('DL:([a-z0-9]+[.]rapidshare[.]com),([0-9A-F]+)').search
+_auth_search = re.compile('DL:([a-z0-9]+[.]rapidshare[.]com),([0-9A-F]+),([0-9]+)').search
 del re
 
 from leechy import Browser
@@ -41,7 +41,7 @@ class Browser(Browser):
             return
         response = self.open(self.start_uri)
         while 1:
-            url = 'http://api.rapidshare.com/cgi-bin/rsapi.cgi?sub=download_v1&fileid=%s&filename=%s&try=1&cbf=RSAPIDispatcher&cbid=1' % (ident, target)
+            url = 'http://api.rapidshare.com/cgi-bin/rsapi.cgi?sub=download_v1&fileid=%s&filename=%s' % (ident, target)
             response = self.open(url)
             content = response.read()
             m = _wait_search(content)
@@ -52,20 +52,17 @@ class Browser(Browser):
                 seconds = min(seconds, 5 * 60)
                 yield seconds
                 continue
-            m = _auth_search(content)
-            if m is None:
-                if 'more files from your IP' in content:
-                    self.report_simultaneous_download()
-                self.report_api_error('auth')
             break
-        for i in xrange(5):
-            self.wget(self.start_uri, target)
-            if os.path.getsize(target) < 500:
-                os.unlink(target)
-                yield 15
-                continue
-            break
-        else:
-            self.report_api_error('download')
+        m = _auth_search(content)
+        if m is None:
+            if 'more files from your IP' in content:
+                self.report_simultaneous_download()
+            self.report_api_error('auth')
+        host, magic, wait = m.groups()
+        wait = int(wait)
+        yield wait
+        url = 'http://%s/cgi-bin/rsapi.cgi' % host
+        data = 'sub=download_v1&fileid=%s&filename=%s&dlauth=%s' % (ident, target, magic)
+        self.wget(url, target, data)
 
 # vim:ts=4 sw=4 et
