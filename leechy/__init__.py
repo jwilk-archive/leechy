@@ -144,11 +144,14 @@ def sleep(n):
 class WgetFailure(Exception):
     pass
 
-def wget(uri, target):
+def wget(uri, target, data=None):
     import subprocess
     import os
     tmp_target = '%s.leechy-tmp' % target
-    rc = subprocess.call(['wget', '-O', tmp_target, '--', uri])
+    args = ['wget', '-O', tmp_target, '--', uri]
+    if data is not None:
+        args[1:1] = ['--post-data', data]
+    rc = subprocess.call(args)
     if rc != 0:
         raise WgetFailure()
     os.rename(tmp_target, target)
