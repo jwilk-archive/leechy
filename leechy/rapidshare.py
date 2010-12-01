@@ -48,8 +48,6 @@ class Browser(Browser):
             if m is not None:
                 [seconds] = m.groups()
                 seconds = int(seconds)
-                # Sometimes we can wait much shorter than requested:
-                seconds = min(seconds, 5 * 60)
                 yield seconds
                 continue
             break
