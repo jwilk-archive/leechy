@@ -41,7 +41,7 @@ class Browser(Browser):
             return
         response = self.open(self.start_uri)
         while 1:
-            url = 'http://api.rapidshare.com/cgi-bin/rsapi.cgi?sub=download_v1&fileid=%s&filename=%s' % (ident, target)
+            url = 'http://api.rapidshare.com/cgi-bin/rsapi.cgi?sub=download&fileid=%s&filename=%s' % (ident, target)
             response = self.open(url)
             content = response.read()
             m = _wait_search(content)
@@ -60,7 +60,7 @@ class Browser(Browser):
         wait = int(wait)
         yield wait
         url = 'http://%s/cgi-bin/rsapi.cgi' % host
-        data = 'sub=download_v1&fileid=%s&filename=%s&dlauth=%s' % (ident, target, magic)
+        data = 'sub=download&fileid=%s&filename=%s&dlauth=%s' % (ident, target, magic)
         self.wget(url, target, data)
 
 # vim:ts=4 sw=4 et
