@@ -28,7 +28,7 @@ def register_plugin(browser):
     import re
     match = re.compile(browser.pattern).match
     _dispatch.append((match, browser))
-    
+
 def register_all_plugins():
     import pkgutil
     _dispatch[:] = []
@@ -87,7 +87,7 @@ class Progress(object):
             self.width = None
         self.n = -1
         self.update(0)
-    
+
     def update(self, n):
         if self.fp is not None and n > self.n:
             b = self.width * n // self.max
