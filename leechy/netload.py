@@ -27,6 +27,7 @@ _wait1_search = re.compile(r'<script type="text/javascript">countdown[(](\d+),')
 _captcha_search = re.compile('<img style="[^"]+" src="(share/includes/captcha.php[?]t=\d+)"').search
 _uri_search = re.compile('<a class="Orange_Link" href="(http://[0-9.]+/[0-9a-f]+)"').search
 _next_file_s = 'You could download your next file'
+_limit_reached_s = 'Limit reached!'
 _bad_captcha_s = 'You may forgot the security code or it might be wrong'
 del re
 
@@ -106,6 +107,9 @@ class Browser(Browser):
             if uri_match is None:
                 if _next_file_s in content:
                     yield seconds
+                    continue
+                if _limit_reached_s in content:
+                    yield 3600
                     continue
                 self.report_api_error('uri')
             uri = uri_match.group(1)
