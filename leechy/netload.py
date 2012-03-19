@@ -77,6 +77,11 @@ class Browser(Browser):
             if target_match is None:
                 self.report_api_error('target')
             target = target_match.group(1)
+            if target.endswith('..'):
+                # Oops, filename was truncated. Recover it from URL.
+                target = self.start_uri.rsplit('/', 1)[-1]
+                if target.endswith('.htm'):
+                    target = target[:-4]
             if os.path.exists(target):
                 self.log_info('Nothing to do.')
                 return
