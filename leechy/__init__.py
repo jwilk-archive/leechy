@@ -20,17 +20,25 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
 
+import locale
+import os
+import pkgutil
+import re
+import subprocess
+import sys
+import tempfile
+import time
+import xml.etree.cElementTree as etree
+
 import mechanize
 
 _dispatch = []
 
 def register_plugin(browser):
-    import re
     match = re.compile(browser.pattern).match
     _dispatch.append((match, browser))
 
 def register_all_plugins():
-    import pkgutil
     _dispatch[:] = []
     for importer, name, ispkg in pkgutil.iter_modules(__path__):
         thismodule = __import__('', globals=globals(), fromlist=(name,), level=1)
@@ -63,7 +71,6 @@ def _get_terminal_size(fp):
     except Exception:
         pass
     try:
-        import os
         return tuple(int(os.getenv(x)) for x in ('COLUMNS', 'LINES'))
     except Exception:
         return (80, 25)
@@ -114,8 +121,6 @@ class FileNotFound(Exception):
 class ApiError(Exception):
 
     def __init__(self, ua, code=None, dump=False):
-        import os
-        import tempfile
         Exception.__init__(self, ua)
         self.code = code
         content = ua.response().read()
@@ -130,8 +135,6 @@ class ApiError(Exception):
             self.dump_name = None
 
 def sleep(n):
-    import sys
-    import time
     if n == 0:
         return
     log_info('Waiting %d seconds...' % n)
@@ -145,8 +148,6 @@ class WgetFailure(Exception):
     pass
 
 def wget(uri, target, data=None):
-    import subprocess
-    import os
     tmp_target = '%s.leechy-tmp' % target
     args = ['wget', '-O', tmp_target, '--', uri]
     if data is not None:
@@ -157,18 +158,15 @@ def wget(uri, target, data=None):
     os.rename(tmp_target, target)
 
 def log_info(message):
-    import sys
     print >>sys.stderr, message
 
 def log_error(message):
-    import sys
     print >>sys.stderr, message
 
 def html_unescape(html):
     if '<' in html:
         raise ValueError
-    from xml.etree import cElementTree as ET
-    return ET.fromstring('<root>%s</root>' % html).text
+    return etree.fromstring('<root>%s</root>' % html).text
 
 class Browser(mechanize.Browser):
 
@@ -178,7 +176,6 @@ class Browser(mechanize.Browser):
         raise NotImplementedError
 
     def __init__(self, start_uri, debug=0):
-        import locale
         mechanize.Browser.__init__(self)
         self.start_uri = start_uri
         self.addheaders = [('User-Agent', 'Mozilla/5.0')]
@@ -207,7 +204,6 @@ class Browser(mechanize.Browser):
         return image
 
     def read_captcha(self, image_fp):
-        import sys
         try:
             import aalib
         except ImportError:
@@ -251,7 +247,6 @@ class Browser(mechanize.Browser):
             return _read_token()
         except ImportError:
             pass
-        import tempfile
         fp = tempfile.NamedTemporaryFile(prefix='leechy-', suffix='.gif')
         try:
             fp.write(image_fp.read())
