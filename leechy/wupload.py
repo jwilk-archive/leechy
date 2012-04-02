@@ -54,49 +54,49 @@ class Browser(Browser):
         content = response.read()
         while 1:
             match = _delay_search(content)
-            if match is None:
-                break
-            [seconds] = match.groups()
-            seconds = int(seconds)
-            yield seconds
-            match = _tm_search(content)
             if match is not None:
-                [tm, tm_hash] = match.groups()
-                data = urllib.urlencode(dict(
-                    tm=tm,
-                    tm_hash=tm_hash,
-                ))
-                response = self.open(main_uri, data)
-            else:
-                response = self.open(main_uri)
-            content = response.read()
-        while 1:
+                [seconds] = match.groups()
+                seconds = int(seconds)
+                yield seconds
+                match = _tm_search(content)
+                if match is not None:
+                    [tm, tm_hash] = match.groups()
+                    data = urllib.urlencode(dict(
+                        tm=tm,
+                        tm_hash=tm_hash,
+                    ))
+                    response = self.open(main_uri, data)
+                else:
+                    response = self.open(main_uri)
+                content = response.read()
+                continue
             match = _recaptcha_site_search(content)
-            if match is None:
-                break
-            [recaptcha_site_id] = match.groups()
-            uri = 'http://www.google.com/recaptcha/api/challenge?' + urllib.urlencode(dict(
-                k=recaptcha_site_id,
-                ajax=1,
-                cachestop=random.random()
-            ))
-            response = self.open_novisit(uri)
-            content = response.read()
-            match = _recaptcha_challenge_search(content)
-            if match is None:
-                break
-            [recaptcha_challenge_id] = match.groups()
-            uri = 'http://www.google.com/recaptcha/api/image?' + urllib.urlencode(dict(
-                c=recaptcha_challenge_id
-            ))
-            captcha = self.open_novisit(uri)
-            token = self.read_captcha(captcha)
-            data = urllib.urlencode(dict(
-                recaptcha_challenge_field=recaptcha_challenge_id,
-                recaptcha_response_field=token,
-            ))
-            response = self.open(main_uri, data=data)
-            content = response.read()
+            if match is not None:
+                [recaptcha_site_id] = match.groups()
+                uri = 'http://www.google.com/recaptcha/api/challenge?' + urllib.urlencode(dict(
+                    k=recaptcha_site_id,
+                    ajax=1,
+                    cachestop=random.random()
+                ))
+                response = self.open_novisit(uri)
+                content = response.read()
+                match = _recaptcha_challenge_search(content)
+                if match is None:
+                    self.report_api_error('recaptcha-challenge')
+                [recaptcha_challenge_id] = match.groups()
+                uri = 'http://www.google.com/recaptcha/api/image?' + urllib.urlencode(dict(
+                    c=recaptcha_challenge_id
+                ))
+                captcha = self.open_novisit(uri)
+                token = self.read_captcha(captcha)
+                data = urllib.urlencode(dict(
+                    recaptcha_challenge_field=recaptcha_challenge_id,
+                    recaptcha_response_field=token,
+                ))
+                response = self.open(main_uri, data=data)
+                content = response.read()
+                continue
+            break
         match = _download_now_search(content)
         if match is None:
             self.report_api_error('download-now')
