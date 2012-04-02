@@ -31,7 +31,7 @@ _tm_search = re.compile(
 ).search
 _recaptcha_site_search = re.compile('Recaptcha[.]create[(]"([0-9A-Za-z_-]+)"').search
 _recaptcha_challenge_search = re.compile('challenge : \'([0-9A-Za-z_-]+)\'').search
-_download_now_search = re.compile('<a href="(http://s[0-9]+[.]wupload[.]com/download/[0-9a-f/]+)"><span>Download Now</span>').search
+_download_now_search = re.compile('<a href="(http://[a-z][0-9]+[.]wupload[.]com/download/[0-9a-f/]+)"><span>Download Now</span>').search
 del re
 
 import os
