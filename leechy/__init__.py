@@ -241,7 +241,7 @@ class Browser(mechanize.Browser):
             return
 
     def read_captcha(self, image_fp):
-        with tempfile.NamedTemporaryFile(prefix='leechy-', suffix='.image') as fp:
+        with tempfile.NamedTemporaryFile(prefix='leechy-captcha-', suffix='.image') as fp:
             fp.write(image_fp.read())
             fp.write(image_fp.read())
             fp.flush()
