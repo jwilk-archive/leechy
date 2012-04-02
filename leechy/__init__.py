@@ -149,16 +149,6 @@ def sleep(n):
 class WgetFailure(Exception):
     pass
 
-def wget(uri, target, data=None):
-    tmp_target = '%s.leechy-tmp' % target
-    args = ['wget', '-O', tmp_target, '--', uri]
-    if data is not None:
-        args[1:1] = ['--post-data', data]
-    rc = subprocess.call(args)
-    if rc != 0:
-        raise WgetFailure()
-    os.rename(tmp_target, target)
-
 def log_info(message):
     print >>sys.stderr, message
 
@@ -173,6 +163,7 @@ def html_unescape(html):
 class Browser(mechanize.Browser):
 
     pattern = None
+    user_agent = 'Mozilla/5.0'
 
     def download(self, uri):
         raise NotImplementedError
@@ -180,7 +171,7 @@ class Browser(mechanize.Browser):
     def __init__(self, start_uri, debug=0):
         mechanize.Browser.__init__(self)
         self.start_uri = start_uri
-        self.addheaders = [('User-Agent', 'Mozilla/5.0')]
+        self.addheaders = [('User-Agent', self.user_agent)]
         self.set_handle_robots(0)
         self.filename_encoding = locale.getpreferredencoding()
         self.debug = debug
@@ -259,11 +250,25 @@ class Browser(mechanize.Browser):
             self.show_captcha(fp)
             return _read_token()
 
+    def wget(self, uri, target, data=None, cookies=None):
+        tmp_target = '%s.leechy-tmp' % target
+        cookies = self._ua_handlers['_cookies'].cookiejar
+        args = ['wget',
+            '--user-agent', self.user_agent,
+            '--header', 'Cookie: ' + '; '.join('%s=%s' % (cookie.name, cookie.value) for cookie in cookies),
+            '-O', tmp_target,
+            '--', uri
+        ]
+        if data is not None:
+            args[1:1] = ['--post-data', data]
+        rc = subprocess.call(args)
+        if rc != 0:
+            raise WgetFailure()
+        os.rename(tmp_target, target)
 
     log_info = staticmethod(log_info)
     log_error = staticmethod(log_error)
 
-    wget = staticmethod(wget)
     html_unescape = staticmethod(html_unescape)
 
 # vim:ts=4 sw=4 et
