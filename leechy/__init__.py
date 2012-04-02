@@ -20,6 +20,8 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
 
+from __future__ import with_statement
+
 import locale
 import os
 import pkgutil
@@ -203,7 +205,7 @@ class Browser(mechanize.Browser):
     def enhance_captcha(self, image):
         return image
 
-    def read_captcha(self, image_fp):
+    def show_captcha(self, image_fp):
         try:
             import aalib
         except ImportError:
@@ -244,17 +246,18 @@ class Browser(mechanize.Browser):
                         for x in xrange(width):
                             sys.stdout.write('#' if image.getpixel((x, y)) > 0 else ' ')
                         sys.stdout.write('\n')
-            return _read_token()
         except ImportError:
-            pass
-        fp = tempfile.NamedTemporaryFile(prefix='leechy-', suffix='.gif')
-        try:
+            return
+
+    def read_captcha(self, image_fp):
+        with tempfile.NamedTemporaryFile(prefix='leechy-', suffix='.image') as fp:
+            fp.write(image_fp.read())
             fp.write(image_fp.read())
             fp.flush()
+            fp.seek(0)
             print 'Token image path:', fp.name
+            self.show_captcha(fp)
             return _read_token()
-        finally:
-            fp.close()
 
 
     log_info = staticmethod(log_info)
