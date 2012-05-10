@@ -43,7 +43,7 @@ class Browser(Browser):
 
     def enhance_captcha(self, image):
         try:
-            import ImageFilter
+            from PIL import ImageFilter
         except ImportError:
             return image
         return image.convert('L').filter(ImageFilter.MedianFilter(size=3))

@@ -202,7 +202,7 @@ class Browser(mechanize.Browser):
         except ImportError:
             aalib = None
         try:
-            import Image, ImageChops
+            from PIL import Image, ImageChops
             image = Image.open(image_fp)
             image = self.enhance_captcha(image)
             result = self.solve_captcha(image)
