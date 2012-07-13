@@ -35,7 +35,7 @@ from leechy import Browser
 
 class Browser(Browser):
 
-    pattern = r'https?://www.furk.net/dt/[0-9a-f]+'
+    pattern = r'https?://www[.]furk[.]net/d[ft]/[0-9a-f]+'
 
     def download(self):
         response = self.open(self.start_uri)
