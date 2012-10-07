@@ -29,7 +29,7 @@ from leechy import Browser
 
 class Browser(Browser):
 
-    pattern = r'^http://(?:www[.])?rapidshare[.]com/files/[0-9]+/'
+    pattern = r'^https?://(?:www[.])?rapidshare[.]com/files/[0-9]+/'
 
     def download(self):
         import urlparse
