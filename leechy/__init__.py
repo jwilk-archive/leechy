@@ -32,6 +32,11 @@ import tempfile
 import time
 import xml.etree.cElementTree as etree
 
+try:
+    import readline
+except ImportError:
+    pass
+
 import mechanize
 
 _dispatch = []
