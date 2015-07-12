@@ -63,4 +63,4 @@ class Browser(Browser):
         data = 'sub=download&fileid=%s&filename=%s&dlauth=%s' % (ident, target, magic)
         self.wget(url, target, data)
 
-# vim:ts=4 sw=4 et
+# vim:ts=4 sts=4 sw=4 et
