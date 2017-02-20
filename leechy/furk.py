@@ -22,8 +22,6 @@
 
 import re
 _xspf_search = re.compile('<a class="button-large button-play" href="(http://[^"]+)">Play<').search
-_wait_search = re.compile('You need to wait ([0-9]+) seconds').search
-_auth_search = re.compile('DL:([a-z0-9]+[.]rapidshare[.]com),([0-9A-F]+),([0-9]+)').search
 del re
 
 import os
